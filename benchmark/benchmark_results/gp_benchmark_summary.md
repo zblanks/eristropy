@@ -8,7 +8,7 @@ Similarly, for a fixed $N = 50$, we compared the computation time between CPyET
 and Scikit-Learn at $T = {50, 100, 200}$.
 We computed 95% bootstrap confidence intervals for the execution times.
 
-![Execution time comparison between CPyET and Scikit-Learn for fixed T and N](gp_comparsion.png)
+![Execution time comparison between CPyET and Scikit-Learn for fixed T and N](gp_comparison.png)
 
 ## Results Discussion
 Overall, the CPyET implementation was significantly faster than the Scikit-Learn implementation.

@@ -199,10 +199,9 @@ def make_stationary_signals(
     Notes:
         We have implemented an RBF-based GP detrending in Numba using a
         standard Cholesky factorization solution. This method, on average,
-        is faster than the Scikit-Learn implementation when the median signal
-        length, $T$, is approximately $T < 50$. The benefit will become more
-        noticeable as the number of unique signals, $N$, increases. However,
-        this implementation is less numerically stable and less well-tested
+        is faster than the Scikit-Learn implementation. The benefit will
+        become more noticeable as the number of unique signals, $N$, increases.
+        However, this implementation is less numerically stable and less well-tested
         than the Scikit-Learn version. You can control which version you use
         via the argument `gp_implementation`.
 
