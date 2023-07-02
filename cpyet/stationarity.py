@@ -114,8 +114,10 @@ def determine_stationary_signals(
         ...     "value": values
         ... })
         >>> stationary_fraction, stationary_signals = determine_stationary_signals(df)
-        >>> fraction_stationary
-        0.5, array(["def"])
+        >>> print(stationary_fraction)
+        0.5
+        >>> print(stationary_signals)
+        array(["def"])
 
     """
     # Check if the required columns are present in the DataFrame

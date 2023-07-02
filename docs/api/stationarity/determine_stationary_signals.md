@@ -56,6 +56,6 @@ print(stationary_signals)
 Output:
 
 ```python
-[0.5]
+0.5
 ['def']
 ```
