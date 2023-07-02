@@ -125,3 +125,6 @@ dmypy.json
 
 # VSCode development
 .vscode
+
+# Ignore benchmark_results data
+**/benchmark_results/*.csv
