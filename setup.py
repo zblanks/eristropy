@@ -25,6 +25,6 @@ setup(
     install_requires=requirements,
     extras_require={
         "test": ["pytest>=7.3", "coverage>=7.2"],
-        "dev": ["black>=23.3", "flake8>=6.0"],
+        "dev": ["black>=23.3", "flake8>=6.0", "tqdm>=4.6"],
     },
 )

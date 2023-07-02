@@ -7,8 +7,6 @@ from cpyet._gp import (
     _squared_euclidean_distance_xy,
     _rbf_kernel,
     _time_series_split,
-    _forward_substitution,
-    _backward_substitution,
     _solve_cholesky,
     _jitter_kernel,
     _fit,
@@ -65,29 +63,6 @@ def test_time_series_split():
         expected_train_indices, expected_test_indices = expected_splits[i]
         assert np.array_equal(train_indices, expected_train_indices)
         assert np.array_equal(test_indices, expected_test_indices)
-
-
-def test_forward_substitution():
-    # Test case 1: Example in documentation
-    L = np.array([[1, 0, 0], [2, 3, 0], [4, 5, 6]])
-    y = np.array([1, 2, 3])
-    eps = 1e-6
-
-    expected_solution = np.linalg.solve(L, y)
-    result = _forward_substitution(L, y)
-
-    np.testing.assert_allclose(result, expected_solution, atol=eps)
-
-
-def test_backward_substitution():
-    # Test case 1: Example in documentation
-    L = np.array([[1, 0, 0], [2, 3, 0], [4, 5, 6]])
-    z = np.array([1, 0, -1])
-
-    expected_solution = np.linalg.solve(L.T, z)
-    result = _backward_substitution(L, z)
-
-    np.testing.assert_allclose(result, expected_solution)
 
 
 def test_solve_cholesky():

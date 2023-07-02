@@ -2,6 +2,7 @@ import numba as nb
 import numpy as np
 import pandas as pd
 from scipy import stats
+from scipy.linalg import cho_factor, cho_solve
 from sklearn.gaussian_process import GaussianProcessRegressor
 from sklearn.gaussian_process.kernels import RBF
 from sklearn.model_selection import RandomizedSearchCV, TimeSeriesSplit
@@ -269,76 +270,6 @@ def _mean_squared_error(y: np.ndarray, yhat: np.ndarray) -> float:
     return (1.0 / n) * error
 
 
-@nb.njit(fastmath=True)
-def _forward_substitution(L: np.ndarray, y: np.ndarray) -> np.ndarray:
-    """
-    Perform forward substitution to solve the lower triangular system Lz = y.
-
-    Args:
-        L (np.ndarray): The lower triangular matrix L of shape (n, n).
-        y (np.ndarray): The vector y of shape (n,).
-
-    Returns:
-        np.ndarray: The solution vector z of shape (n,).
-
-    Notes:
-        - The input matrix L should be lower triangular from a Cholesky factorization
-        - The dimensions of L and y should be compatible for matrix-vector multiplication.
-
-    Examples:
-        >>> L = np.array([[1, 0, 0], [2, 3, 0], [4, 5, 6]])
-        >>> y = np.array([1, 2, 3])
-        >>> _forward_substitution(L, y)
-        array([ 1.,  0., -0.16666667])
-
-    """
-    n = y.size
-    z = np.zeros((n,), dtype=np.float64)
-
-    for i in range(n):
-        z[i] = y[i]
-        for j in range(i):
-            z[i] -= L[i, j] * z[j]
-        z[i] /= L[i, i]
-
-    return z
-
-
-@nb.njit(fastmath=True)
-def _backward_substitution(L: np.ndarray, z: np.ndarray) -> np.ndarray:
-    """
-    Perform backward substitution to solve the upper triangular system L^T a = z.
-
-    Parameters:
-        L (np.ndarray): The lower triangular matrix L of shape (n, n).
-        z (np.ndarray): The vector z of shape (n,).
-
-    Returns:
-        np.ndarray: The solution vector a of shape (n,).
-
-    Notes:
-        - The input matrix L should be lower triangular from the Cholesky factorization.
-        - The dimensions of L and z should be compatible for matrix-vector multiplication.
-
-    Examples:
-        >>> L = np.array([[1, 0, 0], [2, 3, 0], [4, 5, 6]])
-        >>> z = np.array([1, 0, -1])
-        >>> _backward_substitution(L, z)
-        array([ 1.11111111,  0.27777778, -0.16666667])
-    """
-    n = z.size
-    a = np.zeros((n,), dtype=np.float64)
-
-    for i in range(n - 1, -1, -1):
-        a[i] = z[i]
-        for j in range(i + 1, n):
-            a[i] -= L[j, i] * a[j]
-        a[i] /= L[i, i]
-
-    return a
-
-
-@nb.njit
 def _solve_cholesky(K: np.ndarray, y: np.ndarray) -> np.ndarray:
     """
     Solve the linear equation system Kx = y using the Cholesky factorization.
@@ -360,9 +291,8 @@ def _solve_cholesky(K: np.ndarray, y: np.ndarray) -> np.ndarray:
         >>> _solve_cholesky(K, y)
         array([0.60869565, 0.7826087, 2.73913043])
     """
-    L = np.linalg.cholesky(K)
-    z = _forward_substitution(L, y)
-    a = _backward_substitution(L, z)
+    L = cho_factor(K, lower=True, check_finite=False)[0]
+    a = cho_solve((L, True), y, check_finite=False)
     return a
 
 
@@ -396,7 +326,6 @@ def _jitter_kernel(K: np.ndarray, eps: float = 1e-6) -> None:
         K[i, i] += eps
 
 
-@nb.njit
 def _fit(
     X: np.ndarray,
     y: np.ndarray,
@@ -438,7 +367,6 @@ def _fit(
     return a
 
 
-@nb.njit
 def _predict(X: np.ndarray, Xstar: np.ndarray, ls: float, a: np.ndarray) -> np.ndarray:
     """
     Predict the target values of a Gaussian Process (GP) model for the given input features.
@@ -472,7 +400,6 @@ def _predict(X: np.ndarray, Xstar: np.ndarray, ls: float, a: np.ndarray) -> np.n
     return K.T @ a
 
 
-@nb.njit
 def _partition_data(
     X: np.ndarray, y: np.ndarray, train_idx: np.ndarray, test_idx: np.ndarray
 ) -> tuple[np.ndarray, ...]:
@@ -499,7 +426,6 @@ def _partition_data(
     return Xtrain, ytrain, Xtest, ytest
 
 
-@nb.njit
 def _mean_error_over_splits(
     X: np.ndarray,
     y: np.ndarray,
@@ -546,7 +472,6 @@ def _mean_error_over_splits(
     return np.mean(errors)
 
 
-@nb.njit
 def _find_best_ls(
     X: np.ndarray,
     y: np.ndarray,
