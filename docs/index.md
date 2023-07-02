@@ -1,4 +1,11 @@
-# Overview and Introduction
+# CPyET
+
+## Navigation
+
+- [Home](/)
+- [API Documentation](/api/)
+
+## Overview and Introduction
 Welcome to the CPyET Package Documentation! This document provides an overview of CPyET, 
 a powerful framework for working with cardiopulmonary exercise testing (CPET) signals via Python. 
 CPET is a widely used method for assessing cardiovascular and pulmonary function during exercise. 
@@ -27,7 +34,7 @@ using novel and scalable heuristics. Its features and benefits enable researcher
 to perform comprehensive variability analysis, gain valuable insights, and 
 contribute to advancements in the field of cardiopulmonary exercise testing.
 
-# Features & Benefits
+## Features & Benefits
 CPyET offers a range of features and benefits that facilitate the analysis of CPET signals:
 
 * **Automatic Signal Stationarity**: CPyET enables seamless construction of stationary signals, 
@@ -43,21 +50,21 @@ entropy measures can be challenging. CPyET takes the guesswork out by providing
 reasonable recommendations based on rigorous, nonparametric statistical approaches. 
 These recommendations empower researchers to confidently choose suitable parameters for their analysis.
 
-# Installation
+## Installation
 CPyET is not yet available on PyPI. However, once it is published, you will be able to install it using pip:
 
 ```python
 pip install cpyet
 ```
 
-# Usage
+## Usage
 To start using CPyET in your Python project, import it as follows:
 
 ```python
 import cpyet
 ```
 
-# License
+## License
 CPyET is released under the MIT License.
 
 The MIT License (MIT)
@@ -83,5 +90,4 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 
-[^1]: Chatain, Cyril, et al. "Effects of nonstationarity on muscle force signals regularity during a fatiguing motor task." 
-IEEE Transactions on Neural Systems and Rehabilitation Engineering 28.1 (2019): 228-237.
+[^1]: Chatain, Cyril, et al. "Effects of nonstationarity on muscle force signals regularity during a fatiguing motor task." IEEE Transactions on Neural Systems and Rehabilitation Engineering 28.1 (2019): 228-237.
