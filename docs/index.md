@@ -1,10 +1,3 @@
-# CPyET
-
-## Navigation
-
-- [Home](/)
-- [API Documentation](/api/)
-
 ## Overview and Introduction
 Welcome to the CPyET Package Documentation! This document provides an overview of CPyET, 
 a powerful framework for working with cardiopulmonary exercise testing (CPET) signals via Python. 
@@ -38,11 +31,11 @@ contribute to advancements in the field of cardiopulmonary exercise testing.
 CPyET offers a range of features and benefits that facilitate the analysis of CPET signals:
 
 * **Automatic Signal Stationarity**: CPyET enables seamless construction of stationary signals, 
-a necessary condition for valid entropy and variability analysis[^1]. 
-It incorporates two common techniques &mdash differencing and de-trending &mdash 
+a necessary condition for valid entropy and variability analysis. 
+It incorporates two common techniques, differencing and de-trending, 
 and performs statistical stationarity checks to ensure that the dataset contains valid signals.
 * **Scalable Entropy Calculations**: CPyET provides efficient implementations of 
-sample and permutation entropy. Leveraging a Numba's just-in-time compilation scheme, 
+sample and permutation entropy. Leveraging Numba's just-in-time compilation scheme, 
 CPyET ensures fast and scalable computations, allowing researchers to focus on 
 the analysis rather than the intricacies of the calculations.
 * **Optimal Parameter Selction**: Determining appropriate parameter settings for 
@@ -53,7 +46,7 @@ These recommendations empower researchers to confidently choose suitable paramet
 ## Installation
 CPyET is not yet available on PyPI. However, once it is published, you will be able to install it using pip:
 
-```python
+```bash
 pip install cpyet
 ```
 
@@ -88,6 +81,3 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
-
-
-[^1]: Chatain, Cyril, et al. "Effects of nonstationarity on muscle force signals regularity during a fatiguing motor task." IEEE Transactions on Neural Systems and Rehabilitation Engineering 28.1 (2019): 228-237.
