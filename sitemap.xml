@@ -6,11 +6,6 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://zblanks.github.io/api/</loc>
-         <lastmod>2023-07-03</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
          <loc>https://zblanks.github.io/api/stationarity/</loc>
          <lastmod>2023-07-03</lastmod>
          <changefreq>daily</changefreq>
