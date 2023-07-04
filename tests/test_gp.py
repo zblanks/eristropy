@@ -21,25 +21,25 @@ from cpyet._gp import (
 
 def test_squared_euclidean_distance_xx():
     # Test case 1: Example in the docstring
-    x = np.array([[1, 2], [3, 4], [5, 6]])
+    X = np.array([[1, 2], [3, 4], [5, 6]]).astype(np.float64)
 
-    distances_xx = _squared_euclidean_distance_xx(x)
+    distances_xx = _squared_euclidean_distance_xx(X)
     expected_xx = np.array([[0, 8, 32], [8, 0, 8], [32, 8, 0]])
     assert np.array_equal(distances_xx, expected_xx)
 
 
 def test_squared_euclidean_distance_xy():
-    x = np.array([[1, 2], [3, 4], [5, 6]])
-    y = np.array([[2, 2], [4, 4]])
+    X = np.array([[1, 2], [3, 4], [5, 6]]).astype(np.float64)
+    Y = np.array([[2, 2], [4, 4]]).astype(np.float64)
 
-    distances_xy = _squared_euclidean_distance_xy(x, y)
+    distances_xy = _squared_euclidean_distance_xy(X, Y)
     expected_xy = np.array([[1, 13], [5, 1], [25, 5]])
     assert np.array_equal(distances_xy, expected_xy)
 
 
 def test_rbf_kernel():
     # Test case 1: Example in documentation
-    X = np.array([[1, 2], [3, 4], [5, 6]])
+    X = np.array([[1, 2], [3, 4], [5, 6]]).astype(np.float64)
     D = _squared_euclidean_distance_xx(X)
     ls = 0.5
 
@@ -112,7 +112,7 @@ def test_predict():
 
 def test_mean_squared_error():
     # Test case 1: Example in documentation
-    y = np.array([1, 2, 3])
+    y = np.array([1, 2, 3]).astype(np.float64)
     yhat = np.array([1.5, 2.2, 2.8])
     expected_mse = 0.11
 
@@ -125,7 +125,7 @@ def test_mean_squared_error():
 
 def test_mean_error_over_splits():
     # Test case 1: Example in documentation
-    X = np.arange(10).reshape(-1, 1)
+    X = np.arange(10).reshape(-1, 1).astype(np.float64)
     rng = np.random.default_rng(17)
     y = rng.normal(size=(X.shape[0],))
     ls = 0.5
@@ -137,7 +137,7 @@ def test_mean_error_over_splits():
 
 def test_find_best_ls():
     # Test case 1: Example in docstring
-    X = np.arange(10).reshape(-1, 1)
+    X = np.arange(10).reshape(-1, 1).astype(np.float64)
     rng = np.random.default_rng(17)
     y = rng.normal(size=(X.shape[0],))
     ls_vals = np.array([0.5, 1.0])
@@ -149,7 +149,7 @@ def test_find_best_ls():
 
 def test_detrend_gp():
     # Test case 1: Example in documentation
-    X = np.arange(10).reshape(-1, 1)
+    X = np.arange(10).reshape(-1, 1).astype(np.float64)
     rng = np.random.default_rng(17)
     y = rng.normal(size=(X.shape[0],))
     ls_vals = np.array([0.5, 1.0])

@@ -99,7 +99,7 @@ def _detrend_all_signals_gp_sklearn(
     return out_df
 
 
-@nb.njit(parallel=True, fastmath=True)
+@nb.njit("f8[:, :](f8[:, :])", parallel=True, fastmath=True)
 def _squared_euclidean_distance_xx(X: np.ndarray) -> np.ndarray:
     """
     Compute the squared Euclidean distance between all pairs of inputs in the array X.
@@ -114,7 +114,7 @@ def _squared_euclidean_distance_xx(X: np.ndarray) -> np.ndarray:
         the squared Euclidean distance between the i-th and j-th inputs in X.
 
     Example:
-        >>> X = np.array([[1, 2], [3, 4], [5, 6]])
+        >>> X = np.array([[1, 2], [3, 4], [5, 6]]).astype(np.float64)
         >>> distances = _squared_euclidean_distance_xx(X)
         >>> print(distances)
         array([[ 0,  8, 32],
@@ -134,7 +134,7 @@ def _squared_euclidean_distance_xx(X: np.ndarray) -> np.ndarray:
     return distances
 
 
-@nb.njit(parallel=True, fastmath=True)
+@nb.njit("f8[:, :](f8[:, :], f8[:, :])", parallel=True, fastmath=True)
 def _squared_euclidean_distance_xy(X: np.ndarray, Y: np.ndarray) -> np.ndarray:
     """
     Compute the squared Euclidean distance between pairs of inputs in arrays x and y.
@@ -151,8 +151,8 @@ def _squared_euclidean_distance_xy(X: np.ndarray, Y: np.ndarray) -> np.ndarray:
         the squared Euclidean distance between the i-th input in X and the j-th input in Y.
 
     Example:
-        >>> X = np.array([[1, 2], [3, 4], [5, 6]])
-        >>> Y = np.array([[2, 2], [4, 4]])
+        >>> X = np.array([[1, 2], [3, 4], [5, 6]]).astype(np.float64)
+        >>> Y = np.array([[2, 2], [4, 4]]).astype(np.float64)
         >>> distances_xy = _squared_euclidean_distance_xy(X, Y)
         >>> print(distances_xy)
         array([[ 1, 13],
@@ -172,7 +172,7 @@ def _squared_euclidean_distance_xy(X: np.ndarray, Y: np.ndarray) -> np.ndarray:
     return distances
 
 
-@nb.njit
+@nb.njit("f8[:, :](f8[:, :], f8)")
 def _rbf_kernel(D: np.ndarray, ls: float) -> np.ndarray:
     """
     Compute the radial basis function (RBF) kernel (covariance matrix) given the squared
@@ -189,7 +189,7 @@ def _rbf_kernel(D: np.ndarray, ls: float) -> np.ndarray:
     Example:
         >>> D = np.array([[0, 8, 32],
                           [8, 0, 8],
-                          [32, 8, 0]])
+                          [32, 8, 0]]).astype(np.float64)
         >>> ls = 0.5
         >>> kernel_matrix = _rbf_kernel(D, ls)
         >>> print(kernel_matrix)
@@ -242,7 +242,7 @@ def _time_series_split(
     return splits
 
 
-@nb.njit(fastmath=True)
+@nb.njit("f8(f8[:], f8[:])", fastmath=True)
 def _mean_squared_error(y: np.ndarray, yhat: np.ndarray) -> float:
     """
     Compute the mean squared error (MSE) between the true target values and
@@ -256,7 +256,7 @@ def _mean_squared_error(y: np.ndarray, yhat: np.ndarray) -> float:
         float: Mean squared error between `y` and `yhat`.
 
     Examples:
-        >>> y = np.array([1, 2, 3])
+        >>> y = np.array([1, 2, 3]).astype(np.float64)
         >>> yhat = np.array([1.5, 2.2, 2.8])
         >>> _mean_squared_error(y, yhat)
         0.11
@@ -296,7 +296,7 @@ def _solve_cholesky(K: np.ndarray, y: np.ndarray) -> np.ndarray:
     return a
 
 
-@nb.njit(fastmath=True)
+@nb.njit("(f8[:, :], f8)", fastmath=True)
 def _jitter_kernel(K: np.ndarray, eps: float = 1e-6) -> None:
     """
     Apply jittering to the kernel matrix K to ensure numerical stability.
@@ -450,7 +450,7 @@ def _mean_error_over_splits(
         float: The average mean squared error (MSE) across the validation splits.
 
     Examples:
-        >>> X = np.arange(10).reshape(-1, 1)
+        >>> X = np.arange(10).reshape(-1, 1).astype(np.float64)
         >>> rng = np.random.default_rng(17)
         >>> y = rng.normal(size=(X.shape[0],))
         >>> ls = 0.5
@@ -458,7 +458,6 @@ def _mean_error_over_splits(
         >>> mean_error
         0.7484052691169865
     """
-    # splits = _time_series_split(X, n_splits)
     splits = _time_series_split(X, n_splits)
     errors = np.zeros((n_splits,), dtype=np.float64)
 
@@ -496,7 +495,7 @@ def _find_best_ls(
         float: The ls value that corresponds to the minimal validation error.
 
     Examples:
-        >>> X = np.arange(10).reshape(-1, 1)
+        >>> X = np.arange(10).reshape(-1, 1).astype(np.float64)
         >>> rng = np.random.default_rng(17)
         >>> y = rng.normal(size=(X.shape[0],))
         >>> ls_vals = np.array([0.5, 1.0])
@@ -541,7 +540,7 @@ def _detrend_gp(
 
     Examples:
         >>> import numpy as np
-        >>> X = np.arange(10).reshape(-1, 1)
+        >>> X = np.arange(10).reshape(-1, 1).astype(np.float64)
         >>> rng = np.random.default_rng(17)
         >>> y = rng.normal(size=(X.shape[0],))
         >>> ls_vals = np.array([0.5, 1.0])
