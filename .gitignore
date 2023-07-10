@@ -128,3 +128,5 @@ dmypy.json
 
 # Ignore benchmark_results data
 **/benchmark_results/*.csv
+
+.DS_Store
