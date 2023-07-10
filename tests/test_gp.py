@@ -3,38 +3,19 @@ import pandas as pd
 from sklearn.metrics.pairwise import rbf_kernel
 
 from cpyet._gp import (
-    _squared_euclidean_distance_xx,
-    _squared_euclidean_distance_xy,
     _rbf_kernel,
     _time_series_split,
     _solve_cholesky,
     _jitter_kernel,
     _fit,
     _predict,
-    _mean_squared_error,
     _mean_error_over_splits,
     _find_best_ls,
     _detrend_gp,
     _detrend_all_signals_gp_numba,
 )
 
-
-def test_squared_euclidean_distance_xx():
-    # Test case 1: Example in the docstring
-    X = np.array([[1, 2], [3, 4], [5, 6]]).astype(np.float64)
-
-    distances_xx = _squared_euclidean_distance_xx(X)
-    expected_xx = np.array([[0, 8, 32], [8, 0, 8], [32, 8, 0]])
-    assert np.array_equal(distances_xx, expected_xx)
-
-
-def test_squared_euclidean_distance_xy():
-    X = np.array([[1, 2], [3, 4], [5, 6]]).astype(np.float64)
-    Y = np.array([[2, 2], [4, 4]]).astype(np.float64)
-
-    distances_xy = _squared_euclidean_distance_xy(X, Y)
-    expected_xy = np.array([[1, 13], [5, 1], [25, 5]])
-    assert np.array_equal(distances_xy, expected_xy)
+from cpyet.utils import _squared_euclidean_distance_xx
 
 
 def test_rbf_kernel():
@@ -108,19 +89,6 @@ def test_predict():
     K = rbf_kernel(X, Xstar, gamma=gamma)
     expected_result = K.T @ a
     np.testing.assert_allclose(result, expected_result, atol=eps)
-
-
-def test_mean_squared_error():
-    # Test case 1: Example in documentation
-    y = np.array([1, 2, 3]).astype(np.float64)
-    yhat = np.array([1.5, 2.2, 2.8])
-    expected_mse = 0.11
-
-    mse = _mean_squared_error(y, yhat)
-
-    assert np.isclose(
-        mse, expected_mse
-    ), f"Expected MSE: {expected_mse}, Actual MSE: {mse}"
 
 
 def test_mean_error_over_splits():

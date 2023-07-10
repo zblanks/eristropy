@@ -3,9 +3,9 @@ import pandas as pd
 from statsmodels.tsa.stattools import adfuller
 from statsmodels.stats.multitest import multipletests
 
-from ._difference import _difference_all_signals
-from ._gp import _detrend_all_signals_gp_numba, _detrend_all_signals_gp_sklearn
-from ._linreg import _detrend_all_signals_linreg
+from cpyet._difference import _difference_all_signals
+from cpyet._gp import _detrend_all_signals_gp_numba, _detrend_all_signals_gp_sklearn
+from cpyet._linreg import _detrend_all_signals_linreg
 
 
 def _calculate_pvalues(
