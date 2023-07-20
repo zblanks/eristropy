@@ -1,6 +1,8 @@
 import numpy as np
 import pandas as pd
 
+from eristropy.dataclasses import StationarySignalParams
+
 
 def _difference(x: np.ndarray) -> np.ndarray:
     """
@@ -27,36 +29,33 @@ def _difference(x: np.ndarray) -> np.ndarray:
 
 
 def _difference_all_signals(
-    df: pd.DataFrame,
-    signal_id: str = "signal_id",
-    timestamp: str = "timestamp",
-    value_col: str = "value",
+    df: pd.DataFrame, params: StationarySignalParams
 ) -> pd.DataFrame:
     """
     Compute the differenced signals for each unique signal ID in the DataFrame.
 
     Args:
         df (pd.DataFrame): The input DataFrame containing signal observations.
-        signal_id (str, optional): The column name for the signal ID. Defaults to "signal_id".
-        timestamp (str, optional): The column name for the timestamp. Defaults to "timestamp".
-        value_col (str, optional): The column name for the signal values. Defaults to "value".
+        params (StationarySignalParams): Dataclass defining relavant parameters
+            for constructing stationary signals
 
     Returns:
         pd.DataFrame: The differenced signals for each unique signal ID.
 
     Example:
+        >>> params = StationarySignalParams()
         >>> df = pd.DataFrame({"signal_id": ["abc", "abc", "def", "def"],
                               "timestamp": [1, 2, 1, 2],
                               "value": [2, 3, 5, 7]})
-        >>> difference_all_signals(df)
+        >>> difference_all_signals(df, params)
            signal_id  timestamp       value
         0        abc          2           1
         1        def          2           2
     """
-    df = df.sort_values(timestamp)
+    df = df.sort_values(params.timestamp)
 
     # Group the DataFrame by signal ID
-    grouped = df.groupby(signal_id)
+    grouped = df.groupby(params.signal_id)
 
     # Initialize an empty list to store the differenced signals
     diff_signals = []
@@ -64,14 +63,14 @@ def _difference_all_signals(
     # Iterate over each group and compute the differenced signal
     for _, group in grouped:
         # Compute the differenced signal using np.diff
-        x = group[value_col].values
+        x = group[params.value_col].values
         diff_values = _difference(x)
 
         # Create a new DataFrame for the differenced signal
         diff_df = pd.DataFrame(
             {
-                signal_id: [group[signal_id].iloc[-1]] * len(diff_values),
-                timestamp: group[timestamp].iloc[1:],
+                params.signal_id: [group[params.signal_id].iloc[-1]] * len(diff_values),
+                params.timestamp: group[params.timestamp].iloc[1:],
                 "value": diff_values,
             }
         )

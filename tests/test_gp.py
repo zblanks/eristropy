@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 from sklearn.metrics.pairwise import rbf_kernel
 
-from eristropy._gp import (
+from eristropy.gp import (
     _rbf_kernel,
     _time_series_split,
     _solve_cholesky,
@@ -15,6 +15,7 @@ from eristropy._gp import (
     _detrend_all_signals_gp_numba,
 )
 
+from eristropy.dataclasses import StationarySignalParams
 from eristropy.utils import _squared_euclidean_distance_xx
 
 
@@ -164,8 +165,8 @@ def test_detrend_all_signals_gp():
         }
     )
     ls_vals = np.array([0.5, 1.0])
-
-    detrended_df = _detrend_all_signals_gp_numba(df, ls_vals, n_splits=3)
+    params = StationarySignalParams(ls_vals=ls_vals, n_splits=3)
+    detrended_df = _detrend_all_signals_gp_numba(df, params)
 
     # Assert the structure and values of the detrended_df
     expected_df = pd.DataFrame(

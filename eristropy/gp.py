@@ -7,6 +7,8 @@ from sklearn.gaussian_process import GaussianProcessRegressor
 from sklearn.gaussian_process.kernels import RBF
 from sklearn.model_selection import RandomizedSearchCV, TimeSeriesSplit
 
+from eristropy.dataclasses import StationarySignalParams
+
 from eristropy.utils import (
     _mean_squared_error,
     _squared_euclidean_distance_xx,
@@ -17,9 +19,8 @@ from eristropy.utils import (
 def _sklearn_fit_detrend_gp(
     X: np.ndarray,
     y: np.ndarray,
+    params: StationarySignalParams,
     rng: np.random.RandomState = None,
-    params={"kernel__length_scale": stats.uniform(loc=10.0, scale=90.0)},
-    scoring: str = "neg_mean_squared_error",
 ) -> np.ndarray:
     """
     Fits and predicts a Gaussian Process Regressor for a given signal, X,
@@ -29,10 +30,9 @@ def _sklearn_fit_detrend_gp(
     Args:
         X (np.ndarray): Input signal.
         y (np.ndarray): Response vector.
+        params (StationarySignalParams): Dataclass defining relavant parameters
+            for constructing stationary signals
         rng (np.random.RandomState): Pseudo-random number generator for reproducibility.
-        params (dict, optional): Dictionary of RBF kernel hyperparameters
-            (default: {"kernel__length_scale": stats.uniform(loc=10.0, scale=90.0)}).
-        scoring (str, optional): Loss function (default: "neg_mean_squared_error").
 
     Returns:
         np.ndarray: Detrended signal from the final GP model.
@@ -45,10 +45,16 @@ def _sklearn_fit_detrend_gp(
         kernel=RBF(length_scale_bounds="fixed"), normalize_y=True
     )
 
+    fit_distns = {
+        "kernel__length_scale": stats.uniform(
+            loc=params.ls_range[0], scale=(params.ls_range[1] - params.ls_range[0])
+        )
+    }
+
     cv = RandomizedSearchCV(
         estimator=gp,
-        param_distributions=params,
-        scoring=scoring,
+        param_distributions=fit_distns,
+        scoring=params.sklearn_scoring,
         cv=list(TimeSeriesSplit().split(X)),
         random_state=rng,
     )
@@ -59,7 +65,7 @@ def _sklearn_fit_detrend_gp(
 
 
 def _detrend_all_signals_gp_sklearn(
-    df: pd.DataFrame, random_seed: int = None
+    df: pd.DataFrame, params: StationarySignalParams
 ) -> pd.DataFrame:
     """
     Detrends all signals in benchmark dataset using the randomized search
@@ -67,35 +73,35 @@ def _detrend_all_signals_gp_sklearn(
 
     Args:
         df (pd.DataFrame): The input DataFrame containing the signals.
-        random_seed (int, optional): Random seed for reproducibility
+        params (StationarySignalParams): Dataclass defining relavant parameters
+            for constructing stationary signals
 
     Returns:
         pd.DataFrame: Set of detrended signals for all unique signal IDs
     """
-    signal_ids = df.signal_id.unique()
+    signal_ids = df[params.signal_id].unique()
     detrended_signals = []
 
     for signal_id in signal_ids:
-        X = (
-            df.loc[df.signal_id == signal_id, "timestamp"]
-            .values.reshape(-1, 1)
-            .astype(np.float64)
+        X = df.loc[df[params.signal_id] == signal_id, params.timestamp].values
+        X = X.reshape(-1, 1).astype(np.float64)
+
+        y = df.loc[df[params.signal_id] == signal_id, params.value_col].values.astype(
+            np.float64
         )
 
-        y = df.loc[df.signal_id == signal_id, "value"].values.astype(np.float64)
-
-        if random_seed is not None:
-            rng = np.random.RandomState(17)
+        if params.random_seed is not None:
+            rng = np.random.RandomState(params.random_seed)
         else:
             rng = None
-        detrended_signal = _sklearn_fit_detrend_gp(X, y, rng)
+        detrended_signal = _sklearn_fit_detrend_gp(X, y, params, rng)
 
         n = detrended_signal.size
         tmp_df = pd.DataFrame(
             {
-                "signal_id": np.repeat(signal_id, n),
-                "timestamp": np.arange(n),
-                "value": detrended_signal,
+                params.signal_id: np.repeat(signal_id, n),
+                params.timestamp: X.flatten(),
+                params.value_col: detrended_signal,
             }
         )
 
@@ -464,25 +470,15 @@ def _detrend_gp(
 
 def _detrend_all_signals_gp_numba(
     df: pd.DataFrame,
-    ls_vals: np.ndarray,
-    signal_id: str = "signal_id",
-    timestamp: str = "timestamp",
-    value_col: str = "value",
-    n_splits: int = 5,
-    eps: float = 1e-6,
+    params: StationarySignalParams,
 ) -> pd.DataFrame:
     """
     Detrends all signals in a DataFrame using a Gaussian Process (GP) approach.
 
     Args:
         df (pd.DataFrame): Input DataFrame containing signal observations.
-        ls_vals (np.ndarray): Array of ls values to search over during cross-validation.
-        signal_id (str): Column name for the signal ID (default: "signal_id").
-        timestamp (str): Column name for the timestamp (default: "timestamp").
-        value_col (str): Column name for the signal values (default: "value").
-        n_splits (int, optional): Number of splits to generate for cross-validation (default: 5).
-        eps (float, optional): Small value added to the kernel matrix for numerical stability
-            (default: 1e-6).
+        params (StationarySignalParams): Dataclass defining relavant parameters
+            for constructing stationary signals
 
     Returns:
         pd.DataFrame: DataFrame containing the detrended signals.
@@ -509,10 +505,10 @@ def _detrend_all_signals_gp_numba(
         9       def        5.0  1.300595e-05
     """
     # Sort the DataFrame by timestamp
-    df = df.sort_values(timestamp)
+    df = df.sort_values(params.timestamp)
 
     # Group the DataFrame by signal ID
-    grouped = df.groupby(signal_id)
+    grouped = df.groupby(params.signal_id)
 
     # Initialize an empty list to store the detrended signals
     detrended_signals = []
@@ -520,16 +516,18 @@ def _detrend_all_signals_gp_numba(
     # Iterate over each group and compute the detrended signal
     for _, group in grouped:
         # Detrend the signal via linear regression
-        X = group[timestamp].values.reshape(-1, 1).astype(np.float64)
-        y = group[value_col].values.astype(np.float64)
-        detrended_values = _detrend_gp(X, y, ls_vals, n_splits=n_splits, eps=eps)
+        X = group[params.timestamp].values.reshape(-1, 1).astype(np.float64)
+        y = group[params.value_col].values.astype(np.float64)
+        detrended_values = _detrend_gp(
+            X, y, params.ls_vals, n_splits=params.n_splits, eps=params.eps
+        )
 
         # Create a new DataFrame for the detrended signal
         detrended_df = pd.DataFrame(
             {
-                signal_id: group[signal_id].values,
-                timestamp: X.flatten(),
-                value_col: detrended_values,
+                params.signal_id: group[params.signal_id].values,
+                params.timestamp: X.flatten(),
+                params.value_col: detrended_values,
             }
         )
 

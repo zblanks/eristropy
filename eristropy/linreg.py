@@ -2,6 +2,8 @@ import numpy as np
 import pandas as pd
 from sklearn.linear_model import LinearRegression
 
+from eristropy.dataclasses import StationarySignalParams
+
 
 def _detrend_linreg(X: np.ndarray, y: np.ndarray) -> np.ndarray:
     """
@@ -37,9 +39,7 @@ def _detrend_linreg(X: np.ndarray, y: np.ndarray) -> np.ndarray:
 
 def _detrend_all_signals_linreg(
     df: pd.DataFrame,
-    signal_id: str = "signal_id",
-    timestamp: str = "timestamp",
-    value_col: str = "value",
+    params: StationarySignalParams,
 ) -> pd.DataFrame:
     """
     Compute the detrended signals via linear regression for each unique signal
@@ -47,18 +47,18 @@ def _detrend_all_signals_linreg(
 
     Args:
         df (pd.DataFrame): The input DataFrame containing signal observations.
-        signal_id (str): The column name for the signal ID.
-        timestamp (str): The column name for the timestamp.
-        value_col (str): The column name for the signal values.
+        params (StationarySignalParams): Dataclass defining relavant parameters
+            for constructing stationary signals
 
     Returns:
         pd.DataFrame: The detrended signals for each unique signal ID.
 
     Example:
+        >>> params = StationarySignalParams()
         >>> df = pd.DataFrame({"signal_id": ["abc", "abc", "def", "def"],
                               "timestamp": [1, 2, 1, 2],
                               "value": [2, 3, 5, 7]})
-        >>> _detrend_all_signals_linreg(df)
+        >>> _detrend_all_signals_linreg(df, params)
            signal_id  timestamp  value
         0        abc          1    0.0
         1        abc          2    0.0
@@ -66,10 +66,10 @@ def _detrend_all_signals_linreg(
         3        def          2    0.0
     """
     # Sort the DataFrame by timestamp
-    df = df.sort_values(timestamp)
+    df = df.sort_values(params.timestamp)
 
     # Group the DataFrame by signal ID
-    grouped = df.groupby(signal_id)
+    grouped = df.groupby(params.signal_id)
 
     # Initialize an empty list to store the detrended signals
     detrended_signals = []
@@ -77,16 +77,16 @@ def _detrend_all_signals_linreg(
     # Iterate over each group and compute the detrended signal
     for _, group in grouped:
         # Detrend the signal via linear regression
-        X = group[timestamp].values
-        y = group[value_col].values
+        X = group[params.timestamp].values
+        y = group[params.value_col].values
         detrended_values = _detrend_linreg(X, y)
 
         # Create a new DataFrame for the detrended signal
         detrended_df = pd.DataFrame(
             {
-                signal_id: group[signal_id].values,
-                timestamp: X.flatten(),
-                value_col: detrended_values,
+                params.signal_id: group[params.signal_id].values,
+                params.timestamp: X.flatten(),
+                params.value_col: detrended_values,
             }
         )
 
