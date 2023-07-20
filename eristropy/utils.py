@@ -18,40 +18,6 @@ def _mean(x: np.ndarray) -> float:
     return out
 
 
-@nb.njit("f8(f8[:], i4)", fastmath=True)
-def _autocovariance(x: np.ndarray, lag: int) -> float:
-    n = x.size
-    mean = _mean(x)
-    autocov = 0.0
-
-    for i in range(lag, n):
-        autocov += (x[i] - mean) * (x[i - lag] - mean)
-
-    autocov /= n
-    return autocov
-
-
-@nb.njit("f8[:](f8[:], i4)", fastmath=True)
-def _acv_arr(x: np.ndarray, max_lag: int) -> np.ndarray:
-    acv = np.zeros((max_lag,), dtype=np.float64)
-
-    for i in range(max_lag):
-        acv[i] = _autocovariance(x, i)
-
-    return acv
-
-
-@nb.njit("f8[:](f8[:])", fastmath=True)
-def _abs_acorr(acv: np.ndarray) -> np.ndarray:
-    n = acv.size
-    abs_acorr = np.zeros((n,), dtype=np.float64)
-
-    for i in range(n):
-        abs_acorr[i] = abs(acv[i] / acv[0])  # ACV[0] == Var(X_t)
-
-    return abs_acorr
-
-
 @nb.njit("i4(f8, f8)", fastmath=True)
 def _unif_to_geom(u: float, p: float) -> int:
     return math.ceil(math.log(1 - u) / math.log(1 - p))

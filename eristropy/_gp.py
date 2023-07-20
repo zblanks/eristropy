@@ -7,7 +7,7 @@ from sklearn.gaussian_process import GaussianProcessRegressor
 from sklearn.gaussian_process.kernels import RBF
 from sklearn.model_selection import RandomizedSearchCV, TimeSeriesSplit
 
-from cpyet.utils import (
+from eristropy.utils import (
     _mean_squared_error,
     _squared_euclidean_distance_xx,
     _squared_euclidean_distance_xy,

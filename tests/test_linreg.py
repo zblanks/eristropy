@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pd
 
-from cpyet._linreg import _detrend_linreg, _detrend_all_signals_linreg
+from eristropy._linreg import _detrend_linreg, _detrend_all_signals_linreg
 
 
 def test_detrend_linreg():

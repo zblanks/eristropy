@@ -1,62 +1,10 @@
-import math
 import random
 
 import numba as nb
 import numpy as np
 import pandas as pd
 
-from cpyet.utils import _abs_acorr, _acv_arr, _unif_to_geom, _seed
-
-
-@nb.njit("i4(f8[:], f8[:], i4, i4)", fastmath=True)
-def _compute_mhat(x: np.ndarray, acv: np.ndarray, kn: int, m_max: int) -> int:
-    n = x.size
-
-    # Find first collection of kn autocorrelations that are insignificant
-    cv = 2 * math.sqrt(math.log10(n) / n)
-    abs_acorr = _abs_acorr(acv)
-    mhat = m_max
-
-    for i in range(kn, m_max + 1):
-        if np.all(abs_acorr[i - kn : i] < cv):
-            mhat = i - kn
-            break
-
-    return min(2 * max(mhat, 1), m_max)
-
-
-@nb.njit("f8(f8)", fastmath=True)
-def _h(x: float) -> float:
-    return min(1.0, 2 * (1 - abs(x)))
-
-
-@nb.njit("f8(f8[:], f8)", fastmath=True)
-def _optimal_block_size(x: np.ndarray, c: float = 2.0) -> float:
-    n = x.size
-    kn = max(5, int(math.log10(n)))
-    m_max = int(math.ceil(math.sqrt(n))) + kn
-    acv = _acv_arr(x, m_max + 1)
-    b_max = min(3.0 * math.sqrt(n), n / 3.0)
-
-    mhat = _compute_mhat(x, acv, kn, m_max)
-
-    g = 0.0
-    sigma = acv[0]
-
-    # By symmetry we only do half the iterations then multiply g and sigma
-    # by a factor of two
-    for k in range(1, mhat + 1):
-        z = k / mhat
-        gamma = acv[k]
-        lam = _h(z)
-        sigma += 2.0 * lam * gamma
-        g += 2.0 * lam * k * gamma
-
-    # c = 2.0 is the tuning parameter listed by Andrew Patton; original
-    # coder for this approach in the Politis and Romano (2004) paper
-    d = c * (sigma) ** 2
-    b_star = ((2 * g**2) / d) ** (1 / 3) * n ** (1 / 3)
-    return min(b_star, b_max)
+from eristropy.utils import _unif_to_geom, _seed
 
 
 @nb.njit("i4[:](i4, f8)")
@@ -94,17 +42,15 @@ def _single_stationary_boot(n: int, p: float) -> np.ndarray:
     return arr
 
 
-@nb.njit("f8[:, :](f8[:], i4, f8)")
-def _stationary_bootstrap(
-    x: np.ndarray, n_boot: int = 1000, c: float = 2.0
-) -> np.ndarray:
+@nb.njit("f8[:, :](f8[:], f8, i4)")
+def _stationary_bootstrap(x: np.ndarray, p: float, n_boot: int = 1000) -> np.ndarray:
     """
     Generates `n_boot` stationary bootstrap samples
 
     Args:
         x (np.ndarray): Time series signal. Shape (n,).
+        p (float): Geometric distribution success probability for stationary bootstrap.
         n_boot (int, optional): Number of bootstrap samples. Default is n_boot = 1000.
-        c (float, optional): Tuning parameter for optimal block size selection. Default is c = 2.0.
 
     Returns:
         np.ndarray: Bootstrapped time series matrix. Shape: (n_boot, n).
@@ -112,12 +58,8 @@ def _stationary_bootstrap(
     n = x.size
     X = np.zeros(shape=(n_boot, n), dtype=np.float64)
 
-    bstar = _optimal_block_size(x, c)
-    bstar = max(bstar, 1.01)  # Account degenerate case where b* < 1
-    pstar = 1.0 / bstar  # E[Geom(p)] = 1 / p
-
     for i in range(n_boot):
-        boot_idx = _single_stationary_boot(n, pstar)
+        boot_idx = _single_stationary_boot(n, p)
         X[i, :] = x[boot_idx]
 
     return X

@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from cpyet._difference import _difference, _difference_all_signals
+from eristropy._difference import _difference, _difference_all_signals
 
 
 def test_difference():

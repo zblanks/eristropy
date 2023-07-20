@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 from sklearn.metrics.pairwise import rbf_kernel
 
-from cpyet._gp import (
+from eristropy._gp import (
     _rbf_kernel,
     _time_series_split,
     _solve_cholesky,
@@ -15,7 +15,7 @@ from cpyet._gp import (
     _detrend_all_signals_gp_numba,
 )
 
-from cpyet.utils import _squared_euclidean_distance_xx
+from eristropy.utils import _squared_euclidean_distance_xx
 
 
 def test_rbf_kernel():

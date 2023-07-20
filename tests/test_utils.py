@@ -1,11 +1,9 @@
 import numpy as np
 from scipy.stats import ks_2samp
 
-from cpyet.utils import (
+from eristropy.utils import (
     _mean,
-    _autocovariance,
     _standard_error,
-    _abs_acorr,
     _unif_to_geom,
     _mean_squared_error,
     _squared_euclidean_distance_xx,
@@ -21,26 +19,6 @@ def test_mean():
     np.testing.assert_almost_equal(result, expected_result)
 
 
-def test_autocovariance():
-    x = np.arange(100, dtype=np.float64)
-    rng = np.random.default_rng(17)
-    noise = rng.normal(scale=0.25, size=(x.size,))
-    y = x + noise
-
-    # Compute the ACV up to 10 lags
-    acv = np.zeros((10,), dtype=np.float64)
-    for i in range(10):
-        acv[i] = _autocovariance(y, i)
-
-    # Use a NumPy convolution argument to compute the ACV up to ten lags
-    z = y - y.mean()
-    expected_result = (
-        np.correlate(z, z, mode="full")[y.size - 1 : y.size - 1 + 10] / y.size
-    )
-
-    np.testing.assert_allclose(acv, expected_result)
-
-
 def test_standard_error():
     x = np.arange(100, dtype=np.float64)
     rng = np.random.default_rng(17)
@@ -50,19 +28,6 @@ def test_standard_error():
     result = _standard_error(y)
     expected_result = np.sqrt(np.var(y))
     np.testing.assert_almost_equal(result, expected_result)
-
-
-def test_abs_acorr():
-    x = np.sin(np.linspace(start=0.0, stop=4 * np.pi, num=200))
-    max_lag = 10
-    y = x - x.mean()
-    acv = np.correlate(y, y, mode="full")[y.size - 1 : y.size - 1 + max_lag] / y.size
-
-    expected_result = np.abs(acv / acv[0])
-    result = _abs_acorr(acv)
-
-    # Compare the computed autocorrelation with the expected autocorrelation
-    np.testing.assert_allclose(result, expected_result, rtol=1e-6)
 
 
 def test_unif_to_geom():

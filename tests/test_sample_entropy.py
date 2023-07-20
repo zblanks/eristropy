@@ -1,7 +1,7 @@
 import math
 import numpy as np
 
-from cpyet.sample_entropy import _sampen, _cp_mean_and_sd
+from eristropy.sample_entropy import _sampen, _cp_mean_and_sd
 
 
 def test_sampen():

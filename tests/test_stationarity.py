@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from cpyet.stationarity import (
+from eristropy.stationarity import (
     _calculate_pvalues,
     determine_stationary_signals,
     make_stationary_signals,

@@ -4,8 +4,8 @@ import numba as nb
 import numpy as np
 import pandas as pd
 
-from cpyet._bootstrap import _build_boot_df
-from cpyet.utils import _compute_all_standard_error
+from eristropy._bootstrap import _build_boot_df
+from eristropy.utils import _compute_all_standard_error
 
 
 @nb.njit("f8(f8[:], i4, f8)", fastmath=True)
@@ -230,6 +230,25 @@ def compute_all_sampen(
         The validity of the SampEn is contingent upon the input signals being
         statistically stationary. If one provides non-stationary signals, then
         it is likely the resulting entropy estimate will be incorrect.
+
+    Example:
+        >>> rng = np.random.default_rng(17)
+        >>> signal_ids = np.repeat(["abc", "def"], 100)
+        >>> timestamps = np.tile(np.arange(100), 2)
+        >>> abc_values = rng.normal(size=100)
+        >>> def_values = rng.normal(size=100)
+        >>> values = np.concatenate((abc_values, def_values))
+        >>> df = pd.DataFrame({
+        ...     "signal_id": signal_ids,
+        ...     "timestamp": timestamps,
+        ...     "value": values
+        ... })
+        >>> m = 2
+        >>> r = 0.2 * np.std(values)
+        >>> compute_all_sampen(df, m, r)
+          signal_id    sampen
+        0       abc  2.215574
+        1       def  2.148434
     """
     if boot_col is not None:
         cols = [signal_id, boot_col]
