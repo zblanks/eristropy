@@ -3,7 +3,6 @@ import random
 
 import numba as nb
 import numpy as np
-import pandas as pd
 
 
 @nb.njit("f8(f8[:])", fastmath=True)
@@ -39,19 +38,6 @@ def _standard_error(x: np.ndarray) -> float:
 @nb.njit
 def _seed(a: int):
     random.seed(a)
-
-
-def _compute_all_standard_error(
-    df: pd.DataFrame, groupby_col: str, var_name: str = "sampen"
-) -> pd.DataFrame:
-    result = df.groupby(groupby_col).apply(
-        lambda x: _standard_error(x[var_name].values)
-    )
-
-    result = result.to_frame()
-    result = result.reset_index()
-    result.columns = [groupby_col, f"{var_name}_se"]
-    return result
 
 
 @nb.njit("f8(f8[:], f8[:])", fastmath=True)
@@ -153,3 +139,55 @@ def _squared_euclidean_distance_xy(X: np.ndarray, Y: np.ndarray) -> np.ndarray:
             distances[i, j] = np.sum(diff * diff)
 
     return distances
+
+
+@nb.njit("f8(f8[:], i4, f8)", fastmath=True)
+def _sampen(x: np.ndarray, m: int, r: float) -> float:
+    """
+    Compute SampEn of inputs time series, `x` given a fixed m and r
+
+    Args:
+        x (np.ndarray): Time series signal. Shape is (n,)
+        m (int): Embedding dimension
+        r (float): Radial distance
+
+    Returns:
+        float: SampEn(x; m, r)
+    """
+    n = x.size
+    run = np.zeros(n, dtype=np.int32)
+    lastrun = np.zeros(n, dtype=np.int32)
+    m += 1
+    a = np.zeros(m, dtype=np.float64)
+    b = np.zeros(m, dtype=np.float64)
+
+    for i in range(n - 1):
+        nj = n - i - 1
+        x1 = x[i]
+
+        for jj in range(nj):
+            j = jj + i + 1
+
+            if abs(x[j] - x1) < r:
+                run[jj] = lastrun[jj] + 1
+
+                # Increment up to the limit of m + 1 (recall we had m += 1 for runs)
+                m1 = min(m, run[jj])
+                for order in range(m1):
+                    a[order] += 1.0
+
+                    # Need like-to-like comparisons with A so have to account
+                    # for boundary conditions
+                    if j < n - 1:
+                        b[order] += 1.0
+            else:
+                run[jj] = 0
+
+        # Re-set the run counter for future iterations
+        for j in range(nj):
+            lastrun[j] = run[j]
+
+    if a[-1] == 0.0:
+        return np.nan
+    else:
+        return -math.log(a[m - 1] / b[m - 2])

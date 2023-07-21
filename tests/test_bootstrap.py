@@ -1,6 +1,6 @@
 import numpy as np
 
-from eristropy._bootstrap import (
+from eristropy.bootstrap import (
     _get_idx,
     _single_stationary_boot,
     _stationary_bootstrap,
