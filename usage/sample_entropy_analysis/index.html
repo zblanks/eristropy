@@ -8,11 +8,13 @@
       
       
       
-        <link rel="canonical" href="https://zblanks.github.io/math_explanations/entropy/">
+        <link rel="canonical" href="https://zblanks.github.io/usage/sample_entropy_analysis/">
       
       
-        <link rel="prev" href="../regression/">
+        <link rel="prev" href="../../api/sample_entropy/">
       
+      
+        <link rel="next" href="../../math_explanations/stationarity/">
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
@@ -20,7 +22,7 @@
     
     
       
-        <title>Entropy - EristroPy</title>
+        <title>Sample Entropy Analysis Example - EristroPy</title>
       
     
     
@@ -65,7 +67,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#shannon-entropy" class="md-skip">
+        <a href="#preliminary-set-up" class="md-skip">
           Skip to content
         </a>
       
@@ -101,7 +103,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Entropy
+              Sample Entropy Analysis Example
             
           </span>
         </div>
@@ -314,69 +316,6 @@
       
   
   
-  
-    
-    
-    
-    <li class="md-nav__item md-nav__item--nested">
-      
-        
-        
-        
-        
-          
-        
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
-        
-          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
-            
-  
-  <span class="md-ellipsis">
-    Usage
-  </span>
-  
-
-            <span class="md-nav__icon md-icon"></span>
-          </label>
-        
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_3">
-            <span class="md-nav__icon md-icon"></span>
-            Usage
-          </label>
-          <ul class="md-nav__list" data-md-scrollfix>
-            
-              
-                
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../usage/sample_entropy_analysis/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Sample Entropy Analysis Example
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-          </ul>
-        </nav>
-      
-    </li>
-  
-
-    
-      
-      
-  
-  
     
   
   
@@ -389,65 +328,25 @@
         
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
         
-          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
             
   
   <span class="md-ellipsis">
-    Mathematical Basics
+    Usage
   </span>
   
 
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
-          <label class="md-nav__title" for="__nav_4">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3">
             <span class="md-nav__icon md-icon"></span>
-            Mathematical Basics
+            Usage
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
-            
-              
-                
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../stationarity/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Stationarity
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../regression/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Regression-Based De-Trending
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
             
               
                 
@@ -466,7 +365,7 @@
           
   
   <span class="md-ellipsis">
-    Entropy
+    Sample Entropy Analysis Example
   </span>
   
 
@@ -477,7 +376,7 @@
         
   
   <span class="md-ellipsis">
-    Entropy
+    Sample Entropy Analysis Example
   </span>
   
 
@@ -497,22 +396,22 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#shannon-entropy" class="md-nav__link">
-    Shannon Entropy
+  <a href="#preliminary-set-up" class="md-nav__link">
+    Preliminary Set-Up
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#entropy-of-time-series-signals" class="md-nav__link">
-    Entropy of Time Series Signals
+  <a href="#ensuring-stationary-signals" class="md-nav__link">
+    Ensuring Stationary Signals
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#sample-entropy" class="md-nav__link">
-    Sample Entropy
+  <a href="#find-optimal-sampen-parameters-compute-sampen" class="md-nav__link">
+    Find Optimal SampEn Parameters &amp; Compute SampEn
   </a>
   
 </li>
@@ -521,6 +420,109 @@
   
 </nav>
       
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+    
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Mathematical Basics
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            Mathematical Basics
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../math_explanations/stationarity/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Stationarity
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../math_explanations/regression/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Regression-Based De-Trending
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../math_explanations/entropy/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Entropy
+  </span>
+  
+
+      </a>
     </li>
   
 
@@ -558,22 +560,22 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#shannon-entropy" class="md-nav__link">
-    Shannon Entropy
+  <a href="#preliminary-set-up" class="md-nav__link">
+    Preliminary Set-Up
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#entropy-of-time-series-signals" class="md-nav__link">
-    Entropy of Time Series Signals
+  <a href="#ensuring-stationary-signals" class="md-nav__link">
+    Ensuring Stationary Signals
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#sample-entropy" class="md-nav__link">
-    Sample Entropy
+  <a href="#find-optimal-sampen-parameters-compute-sampen" class="md-nav__link">
+    Find Optimal SampEn Parameters &amp; Compute SampEn
   </a>
   
 </li>
@@ -596,52 +598,41 @@
   
 
 
-<h1 id="entropy">Entropy</h1>
-<h2 id="shannon-entropy">Shannon Entropy</h2>
-<p>Information theory is a discipline intersecting mathematics and computer science that focuses on the quantification, storage, and communication of information. One of its fundamental tenets, entropy, was introduced by Claude Shannon in 1948<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup>. It quantifies the average amount of information or uncertainty inherent in a random variable or data source. If we consider a discrete random variable, <span class="arithmatex">\(X\)</span>, with support <span class="arithmatex">\(S_X\)</span> and a probability mass function, <span class="arithmatex">\(p(x)\)</span>, the entropy of this random variable, <span class="arithmatex">\(X\)</span>, can be calculated as:</p>
-<div class="arithmatex">\[
-    H(X) = -\sum_{x \in S_X} p(x) \log_2 p(x)
-\]</div>
-<p>Higher entropy equates to greater uncertainty, and lower entropy implies increased predictability.</p>
-<h2 id="entropy-of-time-series-signals">Entropy of Time Series Signals</h2>
-<p>In Shannon's groundbreaking work, he introduced a rigorous definition of uncertainty for <em>static</em> systems. However, time series signals represent dynamic systems that evolve over time due to perturbations and inputs. Therefore, it is crucial to develop a concept of entropy that captures the complexity and uncertainty of these dynamic systems.</p>
-<p>In 1958 and 1959, Kolmogorov and Sinai developed such a measure, now coined Kolmogorov-Sinai (KS) entropy<sup id="fnref:2"><a class="footnote-ref" href="#fn:2">2</a></sup>. KS entropy is a measure of the complexity or randomness present in a dynamical system or time series. It quantifies the rate at which information is generated by the system over time. While KS entropy provides a rigorous and mathematically precise definition of entropy applied to time series signals, it is often not a computationally tractable one<sup id="fnref:3"><a class="footnote-ref" href="#fn:3">3</a></sup>. It is for this reason that researchers have developed alternate measures, such as sample entropy (SampEn) and permutation entropy (PermEn).</p>
-<h2 id="sample-entropy">Sample Entropy</h2>
-<p>SampEn is a measure used to estimate the complexity of time series data. Developed by Richman and Moorman<sup id="fnref:4"><a class="footnote-ref" href="#fn:4">4</a></sup>, it builds upon Pincus's approximate entropy<sup id="fnref:5"><a class="footnote-ref" href="#fn:5">5</a></sup>. The concept of SampEn revolves around the idea of template matching in a signal. A template is a subset of consecutive data points from the signal.</p>
-<p>Define a time series signal of length <span class="arithmatex">\(N\)</span> as <span class="arithmatex">\(\mathbf{x} \in \mathbb{R}^N\)</span>. A template of length <span class="arithmatex">\(m\)</span> (known as the "embedding dimension") is denoted by <span class="arithmatex">\(\mathbf{u}_m(i) = (x_i, \ldots, x_{i + m - 1})\)</span>. We compare these templates and consider them a match if the distance between them is less than a defined radius, <span class="arithmatex">\(r\)</span>. Specifically, a match occurs when <span class="arithmatex">\(\lVert \mathbf{u}_m(i) - \mathbf{u}_m(j)\rVert_p \leq r\)</span>, where <span class="arithmatex">\(p\)</span> is the order of the norm (typically <span class="arithmatex">\(p = \infty\)</span> for the L-infinity norm denoting the maximum absolute difference between the elements of two templates) and <span class="arithmatex">\(r &gt; 0\)</span> is the predefined radius. Unlike ApEn, SampEn does not consider self-matches.</p>
-<p>To calculate signal regularity, we compute two quantities, <span class="arithmatex">\(B^m(r)\)</span> and <span class="arithmatex">\(A^m(r)\)</span>. <span class="arithmatex">\(B^m(r)\)</span>, defined as:</p>
-<div class="arithmatex">\[
-    B^m(r) = \frac{1}{Z(N, m)} \sum_{i = 1}^{N-m} \sum_{\substack{j=1\ j\neq i}}^{N-m} \mathbf{1}\left[\lVert \mathbf{u}_m(i) - \mathbf{u}_m(j)\rVert_p \leq r\right],
-\]</div>
-<p>is the probability of the signal remaining within a radius, <span class="arithmatex">\(r\)</span>, for <span class="arithmatex">\(m\)</span> steps. Similarly, <span class="arithmatex">\(A^m(r)\)</span>, given by:</p>
-<div class="arithmatex">\[
-    A^m(r) = \frac{1}{Z(N, m)} \sum_{i = 1}^{N-m} \sum_{\substack{j=1\ j\neq i}}^{N-m} \mathbf{1}\left[\lVert\mathbf{u}_{m+1}(i) - \mathbf{u}_{m+1}(j)\rVert_p \leq r\right],
-\]</div>
-<p>is the probability that the signal stays within the same radius for an additional step (<span class="arithmatex">\(m + 1\)</span> steps in total). In both expressions, <span class="arithmatex">\(\mathbf{1}\left[\cdot \right]\)</span> denotes the indicator function and <span class="arithmatex">\(Z(N, m)\)</span> is a normalization constant to ensure valid probabilities. With these values, we define SampEn as the negative logarithm of the conditional probability that a sequence will remain within radius <span class="arithmatex">\(r\)</span> for <span class="arithmatex">\(m + 1\)</span> steps, given it has stayed within <span class="arithmatex">\(r\)</span> for <span class="arithmatex">\(m\)</span> steps:</p>
-<div class="arithmatex">\[
-    \text{SampEn}(\mathbf{x}, m, r) = -\log\left( \frac{A^m(r)}{B^m(r)}\right).
-\]</div>
-<p>However, if no matches are found at radius <span class="arithmatex">\(r\)</span> across the signal (i.e., <span class="arithmatex">\(B^m(r) = 0\)</span>), <span class="arithmatex">\(\text{SampEn}(\mathbf{x}, m, r)\)</span> is undefined.</p>
-<div class="footnote">
-<hr />
-<ol>
-<li id="fn:1">
-<p>Shannon, Claude Elwood. "A mathematical theory of communication." The Bell system technical journal 27.3 (1948): 379-423.&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
-</li>
-<li id="fn:2">
-<p>Shiryayev, A. N. "New metric invariant of transitive dynamical systems and automorphisms of Lebesgue spaces." Selected Works of AN Kolmogorov: Volume III: Information Theory and the Theory of Algorithms (1993): 57-61.&#160;<a class="footnote-backref" href="#fnref:2" title="Jump back to footnote 2 in the text">&#8617;</a></p>
-</li>
-<li id="fn:3">
-<p>Kantz, Holger, and Thomas Schreiber. Nonlinear time series analysis. Vol. 7. Cambridge university press, 2004.&#160;<a class="footnote-backref" href="#fnref:3" title="Jump back to footnote 3 in the text">&#8617;</a></p>
-</li>
-<li id="fn:4">
-<p>Richman, Joshua S., and J. Randall Moorman. "Physiological time-series analysis using approximate entropy and sample entropy." American journal of physiology-heart and circulatory physiology 278.6 (2000): H2039-H2049.&#160;<a class="footnote-backref" href="#fnref:4" title="Jump back to footnote 4 in the text">&#8617;</a></p>
-</li>
-<li id="fn:5">
-<p>Pincus, Steven M. "Approximate entropy as a measure of system complexity." Proceedings of the National Academy of Sciences 88.6 (1991): 2297-2301.&#160;<a class="footnote-backref" href="#fnref:5" title="Jump back to footnote 5 in the text">&#8617;</a></p>
-</li>
-</ol>
-</div>
+<h1 id="sample-entropy-analysis-example">Sample Entropy Analysis Example</h1>
+<p>This section provides a practical guide to conducting a valid entropy analysis using the <a href="../../api/stationarity/"><code>StationarySignals</code></a> and <a href="../../api/sample_entropy/"><code>SampleEntropy</code></a> classes in this package. Below are the steps to accomplish this:</p>
+<h2 id="preliminary-set-up">Preliminary Set-Up</h2>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+</span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="kn">from</span> <span class="nn">eristropy</span> <span class="kn">import</span> <span class="n">StationarySignals</span><span class="p">,</span> <span class="n">SampleEntropy</span>
+</span></code></pre></div>
+<p>Suppose we have time series signals, here we create synthetic signals for demonstration purposes.</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="n">signal_ids</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">repeat</span><span class="p">([</span><span class="s2">&quot;signal_1&quot;</span><span class="p">,</span> <span class="s2">&quot;signal_2&quot;</span><span class="p">],</span> <span class="mi">100</span><span class="p">)</span>
+</span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="n">timestamps</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">100</span><span class="p">),</span> <span class="mi">2</span><span class="p">)</span>
+</span><span id="__span-1-3"><a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="mi">17</span><span class="p">)</span>
+</span><span id="__span-1-4"><a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a><span class="n">signal_1_values</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="o">-</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">100</span><span class="p">,))</span>
+</span><span id="__span-1-5"><a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a><span class="n">signal_2_values</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="o">-</span><span class="mi">5</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">100</span><span class="p">,))</span>
+</span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="n">values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">signal_1_values</span><span class="p">,</span> <span class="n">signal_2_values</span><span class="p">))</span>
+</span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>
+</span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span>
+</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a>    <span class="s2">&quot;signal_id&quot;</span><span class="p">:</span> <span class="n">signal_ids</span><span class="p">,</span>
+</span><span id="__span-1-10"><a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a>    <span class="s2">&quot;timestamp&quot;</span><span class="p">:</span> <span class="n">timestamps</span><span class="p">,</span>
+</span><span id="__span-1-11"><a id="__codelineno-1-11" name="__codelineno-1-11" href="#__codelineno-1-11"></a>    <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="n">values</span>
+</span><span id="__span-1-12"><a id="__codelineno-1-12" name="__codelineno-1-12" href="#__codelineno-1-12"></a><span class="p">})</span>
+</span></code></pre></div>
+<h2 id="ensuring-stationary-signals">Ensuring Stationary Signals</h2>
+<p>Before computing SampEn, it's crucial to ensure that the signals are stationary (see <a href="../../math_explanations/stationarity/">Stationarity</a> for more details). This is where <a href="../../api/stationarity/"><code>StationarySignals</code></a> comes in handy.</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="n">signals</span> <span class="o">=</span> <span class="n">StationarySignals</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;difference&#39;</span><span class="p">)</span>
+</span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="n">stationary_df</span> <span class="o">=</span> <span class="n">signals</span><span class="o">.</span><span class="n">make_stationary_signals</span><span class="p">()</span>
+</span></code></pre></div>
+<p>In this example, we use the "differencing"-based approach, but we also allow users to de-trend the signals if desired.</p>
+<h2 id="find-optimal-sampen-parameters-compute-sampen">Find Optimal SampEn Parameters &amp; Compute SampEn</h2>
+<p>Now, that we have weakly stationary signals, we can compute the SampEn for all unique signals in the dataset. You can also estimate the uncertainty if needed.</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="n">sampen</span> <span class="o">=</span> <span class="n">SampleEntropy</span><span class="p">(</span><span class="n">stationary_df</span><span class="p">)</span>
+</span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="n">result_df</span> <span class="o">=</span> <span class="n">sampen</span><span class="o">.</span><span class="n">compute_all_sampen</span><span class="p">(</span><span class="n">optimize</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">estimate_uncertainty</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</span></code></pre></div>
+<p>The <code>result_df</code> will contain SampEn estimates from the optimal <span class="arithmatex">\((m, r)\)</span> combination for each unique signal, which you can then analyze further.</p>
+<div class="language-python highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="nb">print</span><span class="p">(</span><span class="n">result_df</span><span class="p">)</span>
+</span></code></pre></div>
 
 
 
