@@ -13,7 +13,6 @@ jobs:
     strategy:
       matrix:
         python-version: ['3.9', '3.10', '3.11']
-        numpy-version: ['1.21', '1.24']
       fail-fast: false
 
     steps:
@@ -35,12 +34,5 @@ jobs:
     - name: Install Dependencies
       run: |
         poetry install
-    - name: Conditional NumPy Install
-      run: |
-        if [[ "${{ matrix.python-version }}" == "3.11" && "${{ matrix.numpy-version }}" == "1.21" ]]; then
-          poetry add numpy==1.24
-        else
-          poetry add numpy==${{ matrix.numpy-version }}
-        fi
     - name: Run Tests
       run: poetry run pytest
