@@ -35,6 +35,12 @@ jobs:
     - name: Install Dependencies
       run: |
         poetry install
-        pip install numpy==${{ matrix.numpy-version }}
+    - name: Conditional NumPy Install
+      run: |
+        if [[ "${{ matrix.python-version }}" == "3.11" && "${{ matrix.numpy-version }}" == "1.21" ]]; then
+          poetry add numpy==1.24
+        else
+          poetry add numpy==${{ matrix.numpy-version }}
+        fi
     - name: Run Tests
       run: poetry run pytest
