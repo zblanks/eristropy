@@ -32,7 +32,7 @@ reasonable recommendations based on rigorous, nonparametric statistical approach
 These recommendations empower researchers to confidently choose suitable parameters for their analysis.
 
 ## Installation
-EristroPy is not yet available on PyPI. However, once it is published, you will be able to install it using pip:
+You can install EristroPy by using pip:
 
 ```bash
 pip install eristropy

@@ -5,6 +5,18 @@ description = "EristroPy: End-to-end entropy analysis of time series signals"
 authors = ["Zachary Blanks <zdb6dz@virginia.edu>"]
 license = "MIT"
 readme = "README.md"
+repository = "https://github.com/zblanks/eristropy"
+homepage = "https://zblanks.github.io/eristropy"
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+]
+keywords = ["entropy", "time-series", "optimization"]
 
 [tool.poetry.dependencies]
 python = ">=3.9,<3.12"

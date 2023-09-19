@@ -6,7 +6,8 @@ This section provides a practical guide to conducting a valid entropy analysis u
 ```python
 import numpy as np
 import pandas as pd
-from eristropy import StationarySignals, SampleEntropy
+from eristropy.stationarity import StationarySiganls
+from eristropy.sample_entropy import SampleEntropy
 ```
 
 Suppose we have time series signals, here we create synthetic signals for demonstration purposes.

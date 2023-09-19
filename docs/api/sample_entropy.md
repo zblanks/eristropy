@@ -34,8 +34,8 @@ This method uses the Optuna library for optimizing the parameters $(m, r, p)$ us
 
 #### Example
 ```python
->>> signals = SampleEntropy(df, n_trials=50)
->>> signals.find_optimal_sampen_params()
+>>> sampen = SampleEntropy(df, n_trials=50)
+>>> sampen.find_optimal_sampen_params()
 ```
 
 ### `compute_all_sampen`
@@ -50,8 +50,8 @@ Computes the SampEn of the input signal set given either the provided or optimiz
 
 #### Example
 ```python
->>> signals = SampleEntropy(df)
->>> results = signals.compute_all_sampen(optimize=True)
+>>> sampen = SampleEntropy(df)
+>>> results = sampen.compute_all_sampen(optimize=True)
 ```
 
 ### `get_optimization_results`
@@ -65,7 +65,7 @@ Return a DataFrame of the optimization results.
 
 #### Example
 ```python
->>> signals = SampleEntropy(df)
->>> signals.find_optimal_sampen_params()
->>> optimization_results = signals.get_optimization_results()
+>>> sampen = SampleEntropy(df)
+>>> sampen.find_optimal_sampen_params()
+>>> optimization_results = sampen.get_optimization_results()
 ```

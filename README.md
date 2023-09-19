@@ -16,7 +16,7 @@ EristroPy offers a multitude of features aimed at simplifying the time series an
 
 ## Installation
 
-EristroPy is not yet available on PyPI. However, you can clone the repository and install it manually. Once available on PyPI, installation will be as simple as running:
+The easiest way to install EristroPy is using pip by calling:
 
 ```bash
 pip install eristropy
@@ -28,7 +28,8 @@ Using EristroPy, you can go from having the base time series signals, to a coher
 ```python
 import numpy as np
 import pandas as pd
-from eristropy import StationarySignals, SampleEntropy
+from eristropy.stationarity import StationarySignals
+from eristropy.sample_entropy import SampleEntropy
 
 signal_ids = np.repeat(["signal_1", "signal_2"], 100)
 timestamps = np.tile(np.arange(100), 2)
