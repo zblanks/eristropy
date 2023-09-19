@@ -1,7 +1,6 @@
 import numpy as np
 import pandas as pd
 
-from eristropy.dataclasses import StationarySignalParams
 from eristropy.linreg import _detrend_linreg, _detrend_all_signals_linreg
 
 
@@ -41,8 +40,7 @@ def test_detrend_all_signals_linreg():
     )
 
     # Compute the detrended signals
-    params = StationarySignalParams(method="detrend", detrend_type="lr")
-    result = _detrend_all_signals_linreg(df, params)
+    result = _detrend_all_signals_linreg(df, "signal_id", "timestamp", "value")
 
     # Assert that the result matches the expected result
     pd.testing.assert_frame_equal(result, expected_result)

@@ -2,7 +2,6 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from eristropy.dataclasses import StationarySignalParams
 from eristropy.difference import _difference, _difference_all_signals
 
 
@@ -42,6 +41,5 @@ def test_difference_all_signals():
         {"signal_id": ["abc", "def"], "timestamp": [2, 2], "value": [1, 2]}
     )
 
-    params = StationarySignalParams(method="difference")
-    result = _difference_all_signals(df, params)
+    result = _difference_all_signals(df, "signal_id", "timestamp", "value")
     pd.testing.assert_frame_equal(result, expected_result)

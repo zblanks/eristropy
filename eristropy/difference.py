@@ -1,8 +1,6 @@
 import numpy as np
 import pandas as pd
 
-from eristropy.dataclasses import StationarySignalParams
-
 
 def _difference(x: np.ndarray) -> np.ndarray:
     """
@@ -29,7 +27,7 @@ def _difference(x: np.ndarray) -> np.ndarray:
 
 
 def _difference_all_signals(
-    df: pd.DataFrame, params: StationarySignalParams
+    df: pd.DataFrame, signal_id: str, timestamp: str, value_col: str
 ) -> pd.DataFrame:
     """
     Compute the differenced signals for each unique signal ID in the DataFrame.
@@ -43,19 +41,18 @@ def _difference_all_signals(
         pd.DataFrame: The differenced signals for each unique signal ID.
 
     Example:
-        >>> params = StationarySignalParams()
         >>> df = pd.DataFrame({"signal_id": ["abc", "abc", "def", "def"],
                               "timestamp": [1, 2, 1, 2],
                               "value": [2, 3, 5, 7]})
-        >>> difference_all_signals(df, params)
+        >>> difference_all_signals(df, 'signal_id', 'timestamp', 'value')
            signal_id  timestamp       value
         0        abc          2           1
         1        def          2           2
     """
-    df = df.sort_values(params.timestamp)
+    df = df.sort_values(timestamp)
 
     # Group the DataFrame by signal ID
-    grouped = df.groupby(params.signal_id)
+    grouped = df.groupby(signal_id)
 
     # Initialize an empty list to store the differenced signals
     diff_signals = []
@@ -63,15 +60,15 @@ def _difference_all_signals(
     # Iterate over each group and compute the differenced signal
     for _, group in grouped:
         # Compute the differenced signal using np.diff
-        x = group[params.value_col].values
+        x = group[value_col].values
         diff_values = _difference(x)
 
         # Create a new DataFrame for the differenced signal
         diff_df = pd.DataFrame(
             {
-                params.signal_id: [group[params.signal_id].iloc[-1]] * len(diff_values),
-                params.timestamp: group[params.timestamp].iloc[1:],
-                "value": diff_values,
+                signal_id: [group[signal_id].iloc[-1]] * len(diff_values),
+                timestamp: group[timestamp].iloc[1:],
+                value_col: diff_values,
             }
         )
 

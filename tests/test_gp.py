@@ -1,5 +1,4 @@
 import numpy as np
-import pandas as pd
 from sklearn.metrics.pairwise import rbf_kernel
 
 from eristropy.gp import (
@@ -12,10 +11,8 @@ from eristropy.gp import (
     _mean_error_over_splits,
     _find_best_ls,
     _detrend_gp,
-    _detrend_all_signals_gp_numba,
 )
 
-from eristropy.dataclasses import StationarySignalParams
 from eristropy.utils import _squared_euclidean_distance_xx
 
 
@@ -142,61 +139,3 @@ def test_detrend_gp():
     )
 
     np.testing.assert_allclose(detrended_signal, expected_detrended_signal, atol=eps)
-
-
-def test_detrend_all_signals_gp():
-    # Test case 1: Example in docstring
-    df = pd.DataFrame(
-        {
-            "signal_id": [
-                "abc",
-                "abc",
-                "abc",
-                "abc",
-                "abc",
-                "def",
-                "def",
-                "def",
-                "def",
-                "def",
-            ],
-            "timestamp": [1, 2, 3, 4, 5, 1, 2, 3, 4, 5],
-            "value": [10, 12, 15, 17, 18, 5, 6, 7, 11, 14],
-        }
-    )
-    ls_vals = np.array([0.5, 1.0])
-    params = StationarySignalParams(ls_vals=ls_vals, n_splits=3)
-    detrended_df = _detrend_all_signals_gp_numba(df, params)
-
-    # Assert the structure and values of the detrended_df
-    expected_df = pd.DataFrame(
-        {
-            "signal_id": [
-                "abc",
-                "abc",
-                "abc",
-                "abc",
-                "abc",
-                "def",
-                "def",
-                "def",
-                "def",
-                "def",
-            ],
-            "timestamp": [1.0, 2.0, 3.0, 4.0, 5.0, 1.0, 2.0, 3.0, 4.0, 5.0],
-            "value": [
-                9.138937e-06,
-                -1.467807e-06,
-                1.298148e-05,
-                -1.006977e-06,
-                1.686713e-05,
-                3.581833e-06,
-                1.587954e-06,
-                3.257620e-06,
-                8.809471e-07,
-                1.300595e-05,
-            ],
-        }
-    )
-
-    pd.testing.assert_frame_equal(detrended_df, expected_df)

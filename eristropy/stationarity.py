@@ -3,7 +3,6 @@ import pandas as pd
 from statsmodels.tsa.stattools import adfuller
 from statsmodels.stats.multitest import multipletests
 
-from eristropy.dataclasses import StationarySignalParams
 from eristropy.difference import _difference_all_signals
 from eristropy.gp import _detrend_all_signals_gp_numba, _detrend_all_signals_gp_sklearn
 from eristropy.linreg import _detrend_all_signals_linreg
@@ -19,32 +18,120 @@ class StationarySignals:
 
     Attributes:
         df (pd.DataFrame): The input DataFrame containing the signals.
-        params (StationarySignalParams): The parameters for the transformation.
-        stationary_frac_ (float): The fraction of signals that were made stationary
-            by the transformation.
-        stationary_signals_ (np.ndarray): The IDs of the signals that were made
-            stationary by the transformation.
+        method (str, optional): The method to use for making signals stationary.
+            Default is 'difference'. Choices are 'difference' and 'detrend'.
+        detrend_type (str, optional): The type of detrending to use if method is 'detrend'.
+            Default is 'gp'. Choices are 'gp' and 'lr'.
+        signal_id (str, optional): Column name in df containing the signal IDs. Default is 'signal_id'.
+        timestamp (str, optional): Column name in df containing the timestamps. Default is 'timestamp'.
+        value_col (str, optional): Column name in df containing the values. Default is 'value'.
+        alpha (float, optional): Significance level for the Augmented Dickey-Fuller test. Default is 0.05.
+        random_seed (int, optional): Seed for the random number generator. Default is None.
+        ls_range (tuple, optional): Tuple specifying the range of length-scales for the Gaussian process. Default is (10.0, 100.0).
+        n_searches (int, optional): Number of searches for Gaussian process hyperparameters. Default is 10.
+        n_splits (int, optional): Number of splits for cross-validation. Default is 5.
+        eps (float, optional): Tolerance for the difference. Default is 1e-6.
+        gp_implementation (str, optional): Implementation to use for the Gaussian process.
+            Default is 'numba'. Choices are 'sklearn' and 'numba'.
+        sklearn_scoring (str, optional): Scoring method when using 'sklearn' for Gaussian process.
+            Default is 'neg_mean_squared_error'.
+        normalize_signals (bool, optional): Whether to normalize signals to zero mean and unit variance.
+            Default is True.
+
+    Methods:
+        _validate_args(): Validates the class attributes.
+        _calculate_pvalues(df: pd.DataFrame) -> np.ndarray: Calculates the p-values for stationarity.
+        _normalize(x: np.ndarray) -> np.ndarray: Normalizes the signal.
+        _determine_stationary_signals(df: pd.DataFrame): Determines which signals are stationary.
+        make_stationary_signals() -> pd.DataFrame: Creates stationary signals.
     """
 
-    def __init__(self, df: pd.DataFrame, params: StationarySignalParams = None) -> None:
+    def __init__(
+        self,
+        df: pd.DataFrame,
+        signal_id: str = "signal_id",
+        timestamp: str = "timestamp",
+        value_col: str = "value",
+        method: str = "difference",
+        detrend_type: str = "gp",
+        alpha: float = 0.05,
+        random_seed: int = None,
+        ls_range: tuple[float, float] = (10.0, 100.0),
+        n_searches: int = 10,
+        n_splits: int = 5,
+        eps: float = 1e-6,
+        gp_implementation: str = "numba",
+        sklearn_scoring: str = "neg_mean_squared_error",
+        normalize_signals: bool = True,
+    ) -> None:
         self.df = df
+        self.signal_id = signal_id
+        self.timestamp = timestamp
+        self.value_col = value_col
+        self.method = method
+        self.detrend_type = detrend_type
+        self.alpha = alpha
+        self.random_seed = random_seed
+        self.ls_range = ls_range
+        self.n_searches = n_searches
+        self.n_splits = n_splits
+        self.eps = eps
+        self.gp_implementation = gp_implementation
+        self.sklearn_scoring = sklearn_scoring
+        self.normalize_signals = normalize_signals
         self.stationary_frac_ = None
         self.stationary_signals_ = None
 
-        if params is None:
-            self.params = StationarySignalParams()
-        elif isinstance(params, StationarySignalParams):
-            self.params = params
+        self._validate_args()
+        _validate_dataframe(self.df, self.signal_id, self.timestamp, self.value_col)
+
+        if self.random_seed is None:
+            self._rng = np.random.RandomState()
         else:
-            raise TypeError("params must be an instance of StationarySignalParams.")
+            self._rng = np.random.RandomState(self.random_seed)
 
-        _validate_dataframe(
-            self.df, self.params.signal_id, self.params.timestamp, self.params.value_col
-        )
+    def _validate_args(self) -> None:
+        valid_methods = {"difference", "detrend"}
+        if self.method not in valid_methods:
+            raise ValueError(f"method must be one of {valid_methods}")
 
-    def _calculate_pvalues(self) -> np.ndarray:
+        valid_detrend_types = {"lr", "gp"}
+        if self.detrend_type not in valid_detrend_types:
+            raise ValueError(f"detrend_type must be one of {valid_detrend_types}")
+
+        if not (0 < self.alpha < 1):
+            raise ValueError("alpha must be in (0, 1)")
+
+        if self.ls_range[0] <= 0 or self.ls_range[0] >= self.ls_range[1]:
+            raise ValueError("ls_range must be a tuple (a, b) with 0 < a < b")
+
+        if not isinstance(self.n_searches, int) or self.n_searches <= 0:
+            raise ValueError("n_searches must be a positive integer")
+
+        if not isinstance(self.n_splits, int) or self.n_splits <= 0:
+            raise ValueError("n_splits must be a positive integer")
+
+        if self.random_seed is not None and not isinstance(self.random_seed, int):
+            raise ValueError("random_seed must be None or an integer.")
+
+        if (
+            not (isinstance(self.eps, float) or isinstance(self.eps, int))
+            or self.eps < 0
+        ):
+            raise ValueError("eps must be a non-negative number")
+
+        valid_gp_implementations = {"sklearn", "numba"}
+        if self.gp_implementation not in valid_gp_implementations:
+            raise ValueError(
+                f"gp_implementation must be one of {valid_gp_implementations}"
+            )
+
+    def _calculate_pvalues(self, df: pd.DataFrame) -> np.ndarray:
         """
         Calculates the ADF p-value for each unique signal ID in the DataFrame.
+
+        Args:
+            df (pd.DataFrame): DataFrame obtained from differencing or detrending
 
         Returns:
             np.ndarray: Array containing the computed p-values.
@@ -57,29 +144,32 @@ class StationarySignals:
         """
 
         # Sort the DataFrame by timestamp
-        df = self.df.sort_values(self.params.timestamp)
+        df = df.sort_values(self.timestamp)
 
         # Group the DataFrame by signal ID
-        grouped = df.groupby(self.params.signal_id)
+        grouped = df.groupby(self.signal_id)
 
         pvalues = []
 
         for _, group in grouped:
-            y = group[self.params.value_col].values.astype(np.float64)
+            y = group[self.value_col].values.astype(np.float64)
             try:
                 pvalue = adfuller(y)[1]
             except ValueError as e:
                 # Handle the case where the signal is (probably) not long enough
                 pvalue = 1.0
-                print(
-                    f"An error occurred for group: {group[self.params.signal_id].iloc[0]}"
-                )
+                print(f"An error occurred for group: {group[self.signal_id].iloc[0]}")
                 print(f"Error message: {str(e)}")
             pvalues.append(pvalue)
 
         return np.asarray(pvalues)
 
-    def _determine_stationary_signals(self) -> None:
+    @staticmethod
+    def _normalize(x: np.ndarray) -> np.ndarray:
+        """Normalizes the input signal to zero mean and unit variance"""
+        return (x - x.mean()) / x.std()
+
+    def _determine_stationary_signals(self, df: pd.DataFrame) -> None:
         """
         Compute the fraction of signals in the DataFrame that are statistically stationary.
 
@@ -88,12 +178,15 @@ class StationarySignals:
         the DataFrame by signal ID and performs the test for each group. The fraction
         is determined based on the proportion of signals that reject the null hypothesis
         of non-stationarity at the specified significance level.
+
+        Args:
+            df: DataFrame obtained after differencing or detrending
         """
-        pvalues = self._calculate_pvalues()
-        multi_rejects = multipletests(pvalues, alpha=self.params.alpha)[0]
+        pvalues = self._calculate_pvalues(df)
+        multi_rejects = multipletests(pvalues, alpha=self.alpha)[0]
         self.stationary_frac_ = multi_rejects.mean()
 
-        unique_signals = self.df[self.params.signal_id].unique()
+        unique_signals = self.df[self.signal_id].unique()
         self.stationary_signals_ = unique_signals[multi_rejects]
 
     def make_stationary_signals(self) -> pd.DataFrame:
@@ -125,8 +218,7 @@ class StationarySignals:
         ...     "timestamp": timestamps,
         ...     "value": values
         ... })
-        >>> params = StationarySignalParams(method="difference")
-        >>> signals = StationarySignals(df, params)
+        >>> signals = StationarySignals(df, method='difference', normalize_signals=False)
         >>> signals.make_stationary_signals()
             signal_id  timestamp     value
         0         abc          1 -6.841017
@@ -141,40 +233,51 @@ class StationarySignals:
         196       def         98 -8.955780
         197       def         99  5.397502
         """
-        # Define the dispatch table
-        detrend_dispatch = {
-            "lr": _detrend_all_signals_linreg,
-            "gp": {
-                "numba": _detrend_all_signals_gp_numba,
-                "sklearn": _detrend_all_signals_gp_sklearn,
-            },
-        }
 
         # Handle the case where the method is 'difference'
-        if self.params.method == "difference":
-            out_df = _difference_all_signals(self.df, self.params)
+        if self.method == "difference":
+            out_df = _difference_all_signals(
+                self.df, self.signal_id, self.timestamp, self.value_col
+            )
 
         # Handle the case where the method is 'detrend'
-        elif self.params.method == "detrend":
-            detrend_function = detrend_dispatch[self.params.detrend_type]
-
-            if isinstance(detrend_function, dict):  # Handle the gp case
-                gp_function = detrend_function[self.params.gp_implementation]
-
-                ls_low, ls_high = self.params.ls_range
-                rng = np.random.default_rng(self.params.random_seed)
-
-                self.params.ls_vals = rng.uniform(
-                    ls_low, ls_high, size=self.params.n_searches
+        elif self.method == "detrend":
+            if self.detrend_type == "lr":
+                out_df = _detrend_all_signals_linreg(
+                    self.df, self.signal_id, self.timestamp, self.value_col
                 )
+            elif self.detrend_type == "gp":
+                if self.gp_implementation == "numba":
+                    out_df = _detrend_all_signals_gp_numba(
+                        self.df,
+                        self.signal_id,
+                        self.timestamp,
+                        self.value_col,
+                        self._rng,
+                        self.ls_range,
+                        self.n_searches,
+                        self.n_splits,
+                        self.eps,
+                    )
+                elif self.gp_implementation == "sklearn":
+                    out_df = _detrend_all_signals_gp_sklearn(
+                        self.df,
+                        self.signal_id,
+                        self.timestamp,
+                        self.value_col,
+                        self._rng,
+                        self.ls_range,
+                        self.sklearn_scoring,
+                    )
 
-                out_df = gp_function(self.df, self.params)
-            else:  # Handle the lr case
-                out_df = detrend_function(self.df, self.params)
-
-        self._determine_stationary_signals()
+        self._determine_stationary_signals(out_df)
         stationary_df = out_df.loc[
-            out_df[self.params.signal_id].isin(self.stationary_signals_)
-        ]
+            out_df[self.signal_id].isin(self.stationary_signals_)
+        ].copy(deep=True)
+
+        if self.normalize_signals:
+            stationary_df[self.value_col] = stationary_df.groupby(self.signal_id)[
+                self.value_col
+            ].transform(self._normalize)
 
         return stationary_df
