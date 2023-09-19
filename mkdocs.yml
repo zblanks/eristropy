@@ -1,12 +1,16 @@
-site_name: CPyET
+site_name: EristroPy
 site_url: https://zblanks.github.io
 nav:
   - Getting Started: index.md
   - API:
     - api/stationarity.md
+    - api/sample_entropy.md
+  - Usage:
+    - usage/sample_entropy_analysis.md
   - Mathematical Basics:
     - math_explanations/stationarity.md
     - math_explanations/regression.md
+    - math_explanations/entropy.md
 
 markdown_extensions:
   - pymdownx.arithmatex:
@@ -33,4 +37,4 @@ theme:
     - toc.follow
     - navigation.expand
 
-repo_url: https://github.com/zblanks/CPyET
+repo_url: https://github.com/zblanks/eristropy

@@ -18,7 +18,7 @@ fluctuations or variability of the series do not exhibit any systematic change.
 
 Technically speaking, the two above properties, if true, define a *weakly stationary* signal.
 To have a *strictly stationary* signal, it is also necessary to have
-constant autocovariance. However, for the purposes of CPET variability analysis,
+constant autocovariance. However, for the purposes of most entropy analyses,
 this condition is not necessary, and so when we say that a signal is stationary,
 we mean in the weak sense.
 
@@ -30,41 +30,40 @@ both assumed as a starting point that the input signal was stationary. Moreover,
 Chatain et al.[^3] (and others) have done empirical work demonstrating why
 stationarity is a necessary condition for valid time series variability analysis.
 Practicaly speaking, if the signal is non-stationary, such as having an 
-increasing mean during CPET, it is likely to result in higher entropy values due 
-to the template matching scheme based on a fixed radial distance 
-(see [Entropy](entropy.md) for further explanation on what this means).
+increasing mean during cardiopulmonary exercise testing (CPET), it is likely to 
+result in higher entropy values due to the template matching scheme based on a 
+fixed radial distance (see [Entropy](entropy.md) for further explanation on what this means).
 When it comes to addressing non-stationarity in signals, specifically when the 
-main issue is a non-constant mean (the most common issue with CPET signals), 
-there are two common approaches: differencing and de-trending.[^4]
+main issue is a non-constant mean, there are two common approaches: differencing and de-trending.[^4]
 
 ## Differencing
 Differencing involves creating a new signal by subtracting the previous observation 
-from the current observation. Let $\mathbf{y} \in \mathbb{R}^T$ define a time series
-signal of length, $T$. Formally, differencing is defined as:
+from the current observation. Let $\mathbf{x} \in \mathbb{R}^N$ define a time series
+signal of length, $N$. Formally, differencing is defined as:
 
 $$
-    \tilde s_t := y_t - y_{t-1}, \quad t = 2, \ldots, T
+    \widetilde{x}_t := x_t - x_{t-1}, \quad t = 2, \ldots, N
 $$
 
 The rationale behind differencing stems from autoregressive processes and random walk theory.[^5]
 This approach is relatively straightforward to implement 
 (see: [make_stationary_signals](../api/stationarity.md#make-stationary-signals) for details),
 and one can assess the statistical stationarity of the differenced signal, 
-$\tilde{\mathbf{s}}$, at a given significance level, $\alpha$, using the 
+$\widetilde{\mathbf{x}}$, at a given significance level, $\alpha$, using the 
 Augmented Dickey-Fuller (ADF) test.[^6]
 
 ## De-Trending
 Alternatively, one can estimate and remove the trend present in a non-stationary signal.
 This approach offers various implementations, with linear or polynomial regression 
-being the most common.[^7] Any algorithm that estimates $\hat{y}_t := f(\mathbf{x}_t)$,
-where $\mathbf{x}_t$ represents a set of predictive features and $f(\cdot)$ is a regression function,
+being the most common.[^7] Any algorithm that estimates $\hat{x}_t := f(\theta_t)$,
+where $\theta_t$ represents a set of predictive features and $f(\cdot)$ is a regression function,
 can be used to de-trend the original signal, $\mathbf{y}$, by calculating:
 
 $$
-    \hat{s}_t := y_t - \hat{y}_t, \quad t = 1, \ldots, T
+    \widetilde{x}_t := x_t - f(\theta_t), \quad t = 1, \ldots, T
 $$
 
-In CPyET, we provide two options for de-trending: a standard linear regression function
+In EristroPy, we provide two options for de-trending: a standard linear regression function
 and a radial basis function Gaussian process (GP). If you need to de-trend a 
 non-stationary signal, we highly recommend using the GP implementation. The GP 
 method provided in [make_stationary_signals](../api/stationarity.md#make_stationary_signals) 
